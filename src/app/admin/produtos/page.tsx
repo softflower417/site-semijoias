@@ -33,19 +33,19 @@ export default function AdminProdutos() {
 
   return (
     <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <h1 className="text-2xl font-serif text-brand-burgundy">Produtos</h1>
         <Link 
           href="/admin/produtos/novo" 
-          className="bg-brand-gold text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-brand-gold/90 transition-colors"
+          className="bg-brand-gold text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-brand-gold/90 transition-colors w-full md:w-auto"
         >
           <Plus size={20} />
           NOVO PRODUTO
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[600px]">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500 uppercase tracking-wider">
               <th className="px-6 py-4 font-medium">Nome</th>

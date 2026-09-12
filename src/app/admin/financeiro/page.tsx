@@ -136,8 +136,8 @@ export default function AdminFinanceiro() {
             </form>
           )}
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-left text-sm">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-x-auto">
+            <table className="w-full text-left text-sm min-w-[500px]">
               <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 uppercase">
                 <tr><th className="px-4 py-3 font-medium">Data</th><th className="px-4 py-3 font-medium">Produto</th><th className="px-4 py-3 font-medium">Valor</th><th className="px-4 py-3 text-right">Ação</th></tr>
               </thead>
@@ -183,8 +183,8 @@ export default function AdminFinanceiro() {
             </form>
           )}
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-left text-sm">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-x-auto">
+            <table className="w-full text-left text-sm min-w-[500px]">
               <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 uppercase">
                 <tr><th className="px-4 py-3 font-medium">Data</th><th className="px-4 py-3 font-medium">Descrição</th><th className="px-4 py-3 font-medium">Valor</th><th className="px-4 py-3 text-right">Ação</th></tr>
               </thead>

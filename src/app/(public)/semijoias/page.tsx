@@ -6,7 +6,6 @@ async function getProducts(category: string | undefined) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Se as variáveis de ambiente não estiverem configuradas, retorna vazio
   if (!supabaseUrl || !supabaseKey) return [];
 
   const cookieStore = cookies();
@@ -51,16 +50,16 @@ export default async function SemijoiasPage({
   const categories = ['Brincos', 'Pulseiras', 'Braceletes', 'Colares', 'Anéis'];
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-serif text-brand-burgundy text-center mb-4 uppercase tracking-widest">
+    <div className="container mx-auto px-4 py-12 overflow-hidden">
+      <h1 className="text-4xl font-serif text-brand-burgundy text-center mb-6 uppercase tracking-widest">
         {category || 'Semijoias'}
       </h1>
 
-      {/* Subcategorias */}
-      <div className="flex gap-4 justify-center flex-wrap mb-8">
+      {/* Subcategorias (Scroll horizontal no Mobile) */}
+      <div className="flex overflow-x-auto hide-scrollbar gap-6 md:justify-center mb-8 pb-2 border-b border-gray-100 px-2 -mx-4 md:mx-0">
         <Link
           href="/semijoias"
-          className={`text-sm uppercase tracking-widest pb-1 border-b transition-colors ${!category ? 'border-brand-burgundy text-brand-burgundy' : 'border-transparent text-gray-400 hover:text-brand-burgundy'}`}
+          className={`whitespace-nowrap text-sm uppercase tracking-widest pb-1 transition-colors ${!category ? 'border-b border-brand-burgundy text-brand-burgundy font-medium' : 'border-transparent text-gray-400 hover:text-brand-burgundy'}`}
         >
           Todos
         </Link>
@@ -68,20 +67,40 @@ export default async function SemijoiasPage({
           <Link
             key={cat}
             href={`/semijoias?category=${cat}`}
-            className={`text-sm uppercase tracking-widest pb-1 border-b transition-colors ${category === cat ? 'border-brand-burgundy text-brand-burgundy' : 'border-transparent text-gray-400 hover:text-brand-burgundy'}`}
+            className={`whitespace-nowrap text-sm uppercase tracking-widest pb-1 transition-colors ${category === cat ? 'border-b border-brand-burgundy text-brand-burgundy font-medium' : 'border-transparent text-gray-400 hover:text-brand-burgundy'}`}
           >
             {cat}
           </Link>
         ))}
       </div>
 
-      {/* Filtros */}
-      <div className="flex justify-between items-center mb-10 border-b border-brand-gold/20 pb-4">
-        <span className="text-sm text-gray-400">{products.length} {products.length === 1 ? 'peça' : 'peças'}</span>
-        <div className="flex gap-2">
-          <Link href={`/semijoias${category ? `?category=${category}&` : '?'}sort=recent`} className={`text-xs px-3 py-1 border ${sort === 'recent' ? 'border-brand-burgundy text-brand-burgundy' : 'border-gray-200 text-gray-400'}`}>Mais recentes</Link>
-          <Link href={`/semijoias${category ? `?category=${category}&` : '?'}sort=price_asc`} className={`text-xs px-3 py-1 border ${sort === 'price_asc' ? 'border-brand-burgundy text-brand-burgundy' : 'border-gray-200 text-gray-400'}`}>Menor preço</Link>
-          <Link href={`/semijoias${category ? `?category=${category}&` : '?'}sort=price_desc`} className={`text-xs px-3 py-1 border ${sort === 'price_desc' ? 'border-brand-burgundy text-brand-burgundy' : 'border-gray-200 text-gray-400'}`}>Maior preço</Link>
+      {/* Filtros e Contagem */}
+      <div className="flex justify-between items-center mb-10 border-b border-brand-gold/20 pb-4 px-2">
+        <span className="text-sm text-gray-400 font-light">
+          {products.length} {products.length === 1 ? 'peça' : 'peças'}
+        </span>
+        
+        {/* Menu select nativo bem elegante para o celular */}
+        <div className="relative">
+          <select 
+            onChange={(e) => {
+              // Apenas em cliente side
+              if(typeof window !== 'undefined') {
+                const url = new URL(window.location.href);
+                url.searchParams.set('sort', e.target.value);
+                window.location.href = url.toString();
+              }
+            }}
+            value={sort}
+            className="appearance-none bg-transparent text-brand-burgundy text-sm font-medium pr-6 border-none outline-none focus:ring-0 cursor-pointer"
+          >
+            <option value="recent">Mais recentes</option>
+            <option value="price_asc">Menor preço</option>
+            <option value="price_desc">Maior preço</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand-burgundy">
+            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+          </div>
         </div>
       </div>
 

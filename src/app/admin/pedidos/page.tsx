@@ -53,8 +53,8 @@ export default function AdminPedidos() {
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full text-left text-sm">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
+        <table className="w-full text-left text-sm min-w-[600px]">
           <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 uppercase text-xs">
             <tr>
               <th className="px-5 py-3 font-medium">Data</th>
