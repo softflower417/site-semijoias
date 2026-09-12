@@ -1,18 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, Search, Heart, Menu } from 'lucide-react';
+import { ShoppingBag, Search, Heart, Menu, X } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
+import { useState } from 'react';
 
 export default function Header() {
   const items = useCartStore((state) => state.items);
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-brand-nude/90 backdrop-blur-md border-b border-brand-gold/20">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        {/* Mobile Menu */}
-        <button className="md:hidden text-brand-burgundy">
+        {/* Mobile Menu Button */}
+        <button onClick={() => setMobileMenuOpen(true)} className="md:hidden text-brand-burgundy p-2 -ml-2">
           <Menu size={24} />
         </button>
 
@@ -53,6 +55,32 @@ export default function Header() {
           </Link>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-brand-nude flex flex-col p-6 md:hidden">
+          <div className="flex justify-between items-center mb-12">
+            <span className="font-serif text-2xl text-brand-burgundy tracking-widest">SAONA</span>
+            <button onClick={() => setMobileMenuOpen(false)} className="text-brand-burgundy p-2">
+              <X size={28} />
+            </button>
+          </div>
+          
+          <nav className="flex flex-col gap-6 text-lg tracking-widest text-brand-burgundy">
+            <Link onClick={() => setMobileMenuOpen(false)} href="/">HOME</Link>
+            <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias">SEMIJOIAS</Link>
+            <div className="pl-4 flex flex-col gap-4 text-sm opacity-80 border-l border-brand-gold/30">
+              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Brincos">Brincos</Link>
+              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Pulseiras">Pulseiras</Link>
+              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Braceletes">Braceletes</Link>
+              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Colares">Colares</Link>
+              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Anéis">Anéis</Link>
+            </div>
+            <Link onClick={() => setMobileMenuOpen(false)} href="/sale" className="text-red-800 font-bold">SALE</Link>
+            <Link onClick={() => setMobileMenuOpen(false)} href="/favoritos">FAVORITOS</Link>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Package, DollarSign, LogOut } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Package, DollarSign, LogOut, Inbox } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function AdminLayout({
   children,
@@ -13,7 +13,9 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
+  
+  // Create client safely
+  const [supabase] = useState(() => createClient());
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
@@ -48,6 +50,14 @@ export default function AdminLayout({
           >
             <DollarSign size={20} />
             <span>Financeiro</span>
+          </Link>
+
+          <Link 
+            href="/admin/pedidos" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${pathname.includes('/admin/pedidos') ? 'bg-brand-gold text-white' : 'hover:bg-white/10'}`}
+          >
+            <Inbox size={20} />
+            <span>Pedidos</span>
           </Link>
         </nav>
 

@@ -10,11 +10,12 @@ export default function CarrinhoPage() {
   const handleCheckout = () => {
     const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
     
-    let text = 'Olá! Gostaria de comprar as seguintes peças:\n\n';
+    let text = 'Olá! Gostaria de fazer o pedido das seguintes peças:\n\n';
     items.forEach(item => {
-      text += `• ${item.quantity}x ${item.name} — R$ ${item.price.toFixed(2)}\n`;
+      const price = item.is_on_sale && item.sale_price ? item.sale_price : item.price;
+      text += `• ${item.quantity}x ${item.name} — R$ ${Number(price).toFixed(2).replace('.', ',')}\n`;
     });
-    text += `\n*Total: R$ ${getCartTotal().toFixed(2)}*`;
+    text += `\n*Total: R$ ${getCartTotal().toFixed(2).replace('.', ',')}*`;
 
     window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank');
   };

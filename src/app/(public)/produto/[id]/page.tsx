@@ -15,6 +15,7 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
     price: 189.90,
     sale_price: null,
     is_on_sale: false,
+    stock_quantity: 0, // Simulating an out of stock product for example, or you can fetch it
     description: 'Um brinco elegante em formato de gota, perfeito para ocasiões especiais. Possui acabamento impecável e brilho intenso.',
     specs: {
       material: 'Metal Hipoalergênico',
@@ -25,14 +26,19 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
     image_url: ''
   };
 
+  const isOutOfStock = product.stock_quantity <= 0;
+
   const handleAddToCart = () => {
+    if (isOutOfStock) return;
     addItem(product);
     alert('Peça adicionada ao carrinho!');
   };
 
   const handleBuyWhatsApp = () => {
+    if (isOutOfStock) return;
     const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
-    const text = encodeURIComponent(`Olá! Gostaria de comprar a peça: ${product.name} no valor de R$ ${product.price.toFixed(2)}.`);
+    const price = isOutOfStock ? product.price : (product.is_on_sale && product.sale_price ? product.sale_price : product.price);
+    const text = encodeURIComponent(`Olá! Tenho interesse nesta peça: *${product.name}* — R$ ${Number(price).toFixed(2).replace('.', ',')}`);
     window.open(`https://wa.me/${number}?text=${text}`, '_blank');
   };
 
@@ -42,7 +48,12 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
         
         {/* Galeria de Fotos */}
         <div className="space-y-4">
-          <div className="aspect-[3/4] bg-white border border-gray-100 flex items-center justify-center text-gray-400">
+          <div className="aspect-[3/4] bg-white border border-gray-100 flex items-center justify-center text-gray-400 relative">
+            {isOutOfStock && (
+               <div className="absolute top-4 left-4 bg-gray-900 text-white text-xs px-3 py-1 uppercase tracking-widest z-10">
+                 Esgotado
+               </div>
+            )}
             Foto Principal
           </div>
           <div className="grid grid-cols-4 gap-4">
@@ -77,18 +88,26 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
           <div className="space-y-4 mb-10">
             <button 
               onClick={handleAddToCart}
-              className="w-full bg-brand-burgundy text-brand-nude py-4 uppercase tracking-widest text-sm hover:bg-brand-burgundy/90 transition-colors flex items-center justify-center gap-2"
+              disabled={isOutOfStock}
+              className={`w-full py-4 uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-colors
+                ${isOutOfStock 
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                  : 'bg-brand-burgundy text-brand-nude hover:bg-brand-burgundy/90'}`}
             >
               <ShoppingBag size={18} />
-              Adicionar à Sacola
+              {isOutOfStock ? 'Produto Esgotado' : 'Adicionar à Sacola'}
             </button>
             
             <button 
               onClick={handleBuyWhatsApp}
-              className="w-full border border-[#25D366] text-[#25D366] py-4 uppercase tracking-widest text-sm hover:bg-[#25D366] hover:text-white transition-colors flex items-center justify-center gap-2"
+              disabled={isOutOfStock}
+              className={`w-full py-4 uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-colors border
+                ${isOutOfStock
+                  ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white'}`}
             >
               <MessageCircle size={18} />
-              Comprar pelo WhatsApp
+              {isOutOfStock ? 'Indisponível' : 'Comprar pelo WhatsApp'}
             </button>
           </div>
 

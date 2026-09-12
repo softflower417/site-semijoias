@@ -9,11 +9,12 @@ CREATE TABLE products (
   sale_price DECIMAL(10, 2),
   is_on_sale BOOLEAN DEFAULT FALSE,
   category TEXT NOT NULL,
+  stock_quantity INTEGER DEFAULT 1,
   material TEXT,
   plating TEXT,
   measurements TEXT,
   warranty TEXT,
-  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'out_of_stock')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -43,6 +44,17 @@ CREATE TABLE expenses (
   date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
+-- 5. Tabela de Pedidos/Sugestões dos Clientes
+CREATE TABLE customer_requests (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  whatsapp TEXT NOT NULL,
+  message TEXT NOT NULL,
+  image_url TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'seen', 'done')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- RLS (Row Level Security)
 
 -- Habilitar RLS em todas as tabelas
@@ -50,6 +62,7 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE product_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sales ENABLE ROW LEVEL SECURITY;
 ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customer_requests ENABLE ROW LEVEL SECURITY;
 
 -- Políticas para `products`
 -- Públicos (anon) podem ler produtos ativos
@@ -87,6 +100,22 @@ ON expenses FOR ALL
 TO authenticated 
 USING (true);
 
+-- Políticas para `customer_requests`
+-- Qualquer visitante pode INSERIR um pedido (enviar solicitação)
+CREATE POLICY "Anyone can insert requests" 
+ON customer_requests FOR INSERT 
+TO anon 
+WITH CHECK (true);
+
+-- Somente admin pode ler e gerenciar pedidos
+CREATE POLICY "Admin full access on customer_requests" 
+ON customer_requests FOR ALL 
+TO authenticated 
+USING (true);
+
 -- Storage (Você precisará criar um bucket chamado 'product-images' manualmente no Dashboard se não for por SQL)
 -- Inserir bucket se não existir (requer permissão de superuser, normalmente o Storage é criado via UI do Supabase)
 -- INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'product-images', true);
+
+-- Criar bucket para imagens de pedidos (rodar também no SQL Editor)
+-- INSERT INTO storage.buckets (id, name, public) VALUES ('request-images', 'request-images', true);

@@ -6,8 +6,8 @@ export default function Footer() {
         <p className="font-light text-sm tracking-wider uppercase">Semijoias</p>
         
         <div className="flex gap-6 mt-4">
-          <a href="#" className="hover:text-brand-gold transition-colors">Instagram</a>
-          <a href="#" className="hover:text-brand-gold transition-colors">WhatsApp</a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-gold transition-colors">Instagram</a>
+          <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''}?text=${encodeURIComponent('Olá! Gostaria de tirar uma dúvida.')}`} target="_blank" rel="noopener noreferrer" className="hover:text-brand-gold transition-colors">WhatsApp</a>
         </div>
         
         <div className="mt-8 text-xs text-brand-nude/60">

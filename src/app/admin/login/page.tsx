@@ -10,24 +10,31 @@ export default function AdminLogin() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
+  
+  // Create client safely
+  const [supabase] = useState(() => createClient());
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setError('E-mail ou senha inválidos.');
+      if (error) {
+        setError('E-mail ou senha inválidos.');
+        setLoading(false);
+      } else {
+        router.push('/admin/produtos');
+        router.refresh();
+      }
+    } catch (err) {
+      setError('Erro de conexão.');
       setLoading(false);
-    } else {
-      router.push('/admin/produtos');
-      router.refresh();
     }
   };
 
