@@ -77,9 +77,9 @@ export default function AdminProdutos() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right flex justify-end gap-3">
-                    <button className="text-blue-600 hover:text-blue-800" title="Editar">
+                    <Link href={`/admin/produtos/${product.id}/editar`} className="text-blue-600 hover:text-blue-800" title="Editar">
                       <Edit size={18} />
-                    </button>
+                    </Link>
                     <button onClick={() => handleDelete(product.id)} className="text-red-600 hover:text-red-800" title="Excluir">
                       <Trash2 size={18} />
                     </button>

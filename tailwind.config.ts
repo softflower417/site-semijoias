@@ -16,6 +16,10 @@ const config: Config = {
           text: "#333333"
         }
       },
+      fontFamily: {
+        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
+        sans: ['var(--font-lato)', 'system-ui', 'sans-serif'],
+      },
     },
   },
   plugins: [],
