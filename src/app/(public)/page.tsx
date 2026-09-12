@@ -6,7 +6,7 @@ export default function Home() {
     <div>
       {/* Categorias - DESCUBRA SAONA */}
       <section className="py-20 container mx-auto px-4">
-        <h2 className="text-3xl font-serif text-brand-burgundy text-center mb-16 tracking-widest">DESCUBRA SAONA</h2>
+        <h2 className="text-base md:text-2xl font-serif text-brand-burgundy text-center mb-8 md:mb-14 tracking-widest uppercase">Descubra Saona</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
           {[
             { name: 'Brincos', src: '/categorias/saona_capa_brincos.png' },

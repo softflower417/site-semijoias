@@ -56,28 +56,46 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - renderizado fora do header para cobrir tudo */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-brand-nude flex flex-col p-6 md:hidden">
-          <div className="flex justify-between items-center mb-12">
+        <div className="fixed inset-0 z-[9999] bg-[#F4EFEA] flex flex-col overflow-y-auto md:hidden">
+          {/* Topo */}
+          <div className="flex justify-between items-center px-6 py-6 border-b border-brand-gold/20">
             <span className="font-serif text-2xl text-brand-burgundy tracking-widest">SAONA</span>
-            <button onClick={() => setMobileMenuOpen(false)} className="text-brand-burgundy p-2">
+            <button onClick={() => setMobileMenuOpen(false)} className="text-brand-burgundy p-2 -mr-2">
               <X size={28} />
             </button>
           </div>
-          
-          <nav className="flex flex-col gap-6 text-lg tracking-widest text-brand-burgundy">
-            <Link onClick={() => setMobileMenuOpen(false)} href="/">HOME</Link>
-            <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias">SEMIJOIAS</Link>
-            <div className="pl-4 flex flex-col gap-4 text-sm opacity-80 border-l border-brand-gold/30">
-              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Brincos">Brincos</Link>
-              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Pulseiras">Pulseiras</Link>
-              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Braceletes">Braceletes</Link>
-              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Colares">Colares</Link>
-              <Link onClick={() => setMobileMenuOpen(false)} href="/semijoias?category=Anéis">Anéis</Link>
+
+          {/* Navegação */}
+          <nav className="flex flex-col px-6 py-8 gap-1">
+            <Link onClick={() => setMobileMenuOpen(false)} href="/" className="text-brand-burgundy uppercase tracking-widest py-4 border-b border-brand-gold/10 text-base font-medium">
+              Home
+            </Link>
+
+            <div className="border-b border-brand-gold/10">
+              <p className="text-brand-burgundy uppercase tracking-widest py-4 text-base font-medium">Semijoias</p>
+              <div className="flex flex-col gap-1 pl-4 pb-4">
+                {['Brincos', 'Pulseiras', 'Braceletes', 'Colares', 'Anéis'].map(cat => (
+                  <Link
+                    key={cat}
+                    onClick={() => setMobileMenuOpen(false)}
+                    href={`/semijoias?category=${cat}`}
+                    className="text-brand-text/70 py-2 text-sm hover:text-brand-gold transition-colors"
+                  >
+                    {cat}
+                  </Link>
+                ))}
+              </div>
             </div>
-            <Link onClick={() => setMobileMenuOpen(false)} href="/sale" className="text-red-800 font-bold">SALE</Link>
-            <Link onClick={() => setMobileMenuOpen(false)} href="/favoritos">FAVORITOS</Link>
+
+            <Link onClick={() => setMobileMenuOpen(false)} href="/sale" className="text-red-800 uppercase tracking-widest py-4 border-b border-brand-gold/10 text-base font-bold">
+              Sale
+            </Link>
+
+            <Link onClick={() => setMobileMenuOpen(false)} href="/favoritos" className="text-brand-burgundy uppercase tracking-widest py-4 border-b border-brand-gold/10 text-base font-medium">
+              Favoritos
+            </Link>
           </nav>
         </div>
       )}

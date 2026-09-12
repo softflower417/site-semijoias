@@ -3,11 +3,14 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 async function getProducts(category: string | undefined) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Se as variáveis de ambiente não estiverem configuradas, retorna vazio
+  if (!supabaseUrl || !supabaseKey) return [];
+
   const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-    {
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         get(name: string) { return cookieStore.get(name)?.value; },
         set() {}, remove() {},
