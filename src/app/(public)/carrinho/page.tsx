@@ -49,8 +49,18 @@ export default function CarrinhoPage() {
                 key={item.id}
                 className="flex gap-4 border-b border-gray-100 pb-6"
               >
-                <div className="w-24 h-32 bg-gray-50 flex-shrink-0">
-                  {/* Imagem */}
+                <div className="w-24 h-32 bg-gray-50 flex-shrink-0 overflow-hidden border border-gray-100">
+                  {item.image_url ? (
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-200 text-[10px] uppercase tracking-wider">
+                      Sem foto
+                    </div>
+                  )}
                 </div>
                 <div className="flex-grow flex flex-col justify-between">
                   <div>
