@@ -1,4 +1,15 @@
+function normalizeWhatsAppNumber(value: string) {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "5519971713924";
+  const withoutCountry = digits.startsWith("55") ? digits.slice(2) : digits;
+  return `55${withoutCountry.replace(/^0+/, "")}`;
+}
+
 export default function Footer() {
+  const whatsappNumber = normalizeWhatsAppNumber(
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5519971713924",
+  );
+
   return (
     <footer className="bg-brand-burgundy text-brand-nude py-12 mt-24">
       <div className="container mx-auto px-4 flex flex-col items-center gap-6">
@@ -15,7 +26,7 @@ export default function Footer() {
             Instagram
           </a>
           <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5519971713924"}?text=${encodeURIComponent("Olá! Gostaria de tirar uma dúvida.")}`}
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Olá! Gostaria de tirar uma dúvida.")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-brand-gold transition-colors"

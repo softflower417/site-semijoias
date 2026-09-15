@@ -8,7 +8,7 @@ export default function CarrinhoPage() {
   const { items, removeItem, getCartTotal, clearCart } = useCartStore();
 
   const handleCheckout = () => {
-    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5519971713924";
+    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "55199717173924";
 
     let text = "Olá! Gostaria de fazer o pedido das seguintes peças:\n\n";
     items.forEach((item) => {

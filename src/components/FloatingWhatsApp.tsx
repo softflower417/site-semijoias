@@ -2,9 +2,17 @@
 
 import { MessageCircle } from "lucide-react";
 
+function normalizeWhatsAppNumber(value: string) {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "5519971713924";
+  const withoutCountry = digits.startsWith("55") ? digits.slice(2) : digits;
+  return `55${withoutCountry.replace(/^0+/, "")}`;
+}
+
 export default function FloatingWhatsApp() {
-  const whatsappNumber =
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5519971713924";
+  const whatsappNumber = normalizeWhatsAppNumber(
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5519971713924",
+  );
   const message = encodeURIComponent(
     "Olá! Gostaria de tirar uma dúvida sobre as peças.",
   );

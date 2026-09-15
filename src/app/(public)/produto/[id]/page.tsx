@@ -104,7 +104,7 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
 
   const handleBuyWhatsApp = () => {
     if (!product || isOutOfStock) return;
-    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5519971713924";
+    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "55199717173924";
     const price =
       product.is_on_sale && product.sale_price
         ? product.sale_price
