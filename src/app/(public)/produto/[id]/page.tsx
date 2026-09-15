@@ -330,30 +330,17 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Especificações */}
-          {(product.material ||
-            product.plating ||
-            product.measurements ||
-            product.warranty) && (
+          {(product.id || product.measurements || product.warranty) && (
             <div className="border-t border-brand-gold/20 pt-6 space-y-3">
               <h3 className="font-serif text-brand-burgundy text-base mb-3">
                 Especificações
               </h3>
-              {product.material && (
-                <div className="flex gap-4 text-sm border-b border-gray-50 pb-3">
-                  <span className="text-gray-400 w-20 flex-shrink-0">
-                    Material
-                  </span>
-                  <span className="text-brand-text">{product.material}</span>
-                </div>
-              )}
-              {product.plating && (
-                <div className="flex gap-4 text-sm border-b border-gray-50 pb-3">
-                  <span className="text-gray-400 w-20 flex-shrink-0">
-                    Banho
-                  </span>
-                  <span className="text-brand-text">{product.plating}</span>
-                </div>
-              )}
+              <div className="flex gap-4 text-sm border-b border-gray-50 pb-3">
+                <span className="text-gray-400 w-20 flex-shrink-0">Código</span>
+                <span className="text-brand-text uppercase tracking-wide">
+                  {product.id.slice(0, 8)}
+                </span>
+              </div>
               {product.measurements && (
                 <div className="flex gap-4 text-sm border-b border-gray-50 pb-3">
                   <span className="text-gray-400 w-20 flex-shrink-0">
