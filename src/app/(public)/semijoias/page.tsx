@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import Link from "next/link";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 async function getProducts(category: string | undefined) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -10,21 +10,23 @@ async function getProducts(category: string | undefined) {
 
   const cookieStore = cookies();
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
-      cookies: {
-        get(name: string) { return cookieStore.get(name)?.value; },
-        set() {}, remove() {},
+    cookies: {
+      get(name: string) {
+        return cookieStore.get(name)?.value;
       },
-    }
-  );
+      set() {},
+      remove() {},
+    },
+  });
 
   let query = supabase
-    .from('products')
+    .from("products")
     .select(`*, product_images(image_url, sort_order)`)
-    .eq('status', 'active')
-    .order('created_at', { ascending: false });
+    .eq("status", "active")
+    .order("created_at", { ascending: false });
 
   if (category) {
-    query = query.eq('category', category);
+    query = query.eq("category", category);
   }
 
   const { data } = await query;
@@ -37,37 +39,37 @@ export default async function SemijoiasPage({
   searchParams: { category?: string; sort?: string };
 }) {
   const category = searchParams.category;
-  const sort = searchParams.sort || 'recent';
+  const sort = searchParams.sort || "recent";
 
   let products = await getProducts(category);
 
-  if (sort === 'price_asc') {
+  if (sort === "price_asc") {
     products = products.sort((a: any, b: any) => a.price - b.price);
-  } else if (sort === 'price_desc') {
+  } else if (sort === "price_desc") {
     products = products.sort((a: any, b: any) => b.price - a.price);
   }
 
-  const categories = ['Brincos', 'Pulseiras', 'Braceletes', 'Colares', 'Anéis'];
+  const categories = ["Brincos", "Pulseiras", "Braceletes", "Colares", "Anéis"];
 
   return (
     <div className="container mx-auto px-4 py-12 overflow-hidden">
       <h1 className="text-4xl font-serif text-brand-burgundy text-center mb-6 uppercase tracking-widest">
-        {category || 'Semijoias'}
+        {category || "Semijoias"}
       </h1>
 
       {/* Subcategorias (Scroll horizontal no Mobile) */}
       <div className="flex overflow-x-auto hide-scrollbar gap-6 md:justify-center mb-8 pb-2 border-b border-gray-100 px-2 -mx-4 md:mx-0">
         <Link
           href="/semijoias"
-          className={`whitespace-nowrap text-sm uppercase tracking-widest pb-1 transition-colors ${!category ? 'border-b border-brand-burgundy text-brand-burgundy font-medium' : 'border-transparent text-gray-400 hover:text-brand-burgundy'}`}
+          className={`whitespace-nowrap text-sm uppercase tracking-widest pb-1 transition-colors ${!category ? "border-b border-brand-burgundy text-brand-burgundy font-medium" : "border-transparent text-gray-400 hover:text-brand-burgundy"}`}
         >
           Todos
         </Link>
-        {categories.map(cat => (
+        {categories.map((cat) => (
           <Link
             key={cat}
             href={`/semijoias?category=${cat}`}
-            className={`whitespace-nowrap text-sm uppercase tracking-widest pb-1 transition-colors ${category === cat ? 'border-b border-brand-burgundy text-brand-burgundy font-medium' : 'border-transparent text-gray-400 hover:text-brand-burgundy'}`}
+            className={`whitespace-nowrap text-sm uppercase tracking-widest pb-1 transition-colors ${category === cat ? "border-b border-brand-burgundy text-brand-burgundy font-medium" : "border-transparent text-gray-400 hover:text-brand-burgundy"}`}
           >
             {cat}
           </Link>
@@ -77,30 +79,31 @@ export default async function SemijoiasPage({
       {/* Filtros e Contagem */}
       <div className="flex justify-between items-center mb-10 border-b border-brand-gold/20 pb-4 px-2">
         <span className="text-sm text-gray-400 font-light">
-          {products.length} {products.length === 1 ? 'peça' : 'peças'}
+          {products.length} {products.length === 1 ? "peça" : "peças"}
         </span>
-        
-        {/* Menu select nativo bem elegante para o celular */}
-        <div className="relative">
-          <select 
-            onChange={(e) => {
-              // Apenas em cliente side
-              if(typeof window !== 'undefined') {
-                const url = new URL(window.location.href);
-                url.searchParams.set('sort', e.target.value);
-                window.location.href = url.toString();
-              }
-            }}
-            value={sort}
-            className="appearance-none bg-transparent text-brand-burgundy text-sm font-medium pr-6 border-none outline-none focus:ring-0 cursor-pointer"
-          >
-            <option value="recent">Mais recentes</option>
-            <option value="price_asc">Menor preço</option>
-            <option value="price_desc">Maior preço</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand-burgundy">
-            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
+
+        <div className="flex items-center gap-2 text-sm">
+          {[
+            { value: "recent", label: "Mais recentes" },
+            { value: "price_asc", label: "Menor preço" },
+            { value: "price_desc", label: "Maior preço" },
+          ].map((option) => {
+            const url = new URL("/semijoias", "http://localhost");
+            if (category) url.searchParams.set("category", category);
+            url.searchParams.set("sort", option.value);
+
+            const isActive = sort === option.value;
+
+            return (
+              <Link
+                key={option.value}
+                href={url.pathname + url.search}
+                className={`whitespace-nowrap transition-colors ${isActive ? "text-brand-burgundy font-medium" : "text-gray-400 hover:text-brand-burgundy"}`}
+              >
+                {option.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
 
@@ -113,14 +116,21 @@ export default async function SemijoiasPage({
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-10">
           {products.map((product: any) => {
-            const coverImage = product.product_images
-              ?.sort((a: any, b: any) => a.sort_order - b.sort_order)[0]?.image_url;
+            const coverImage = product.product_images?.sort(
+              (a: any, b: any) => a.sort_order - b.sort_order,
+            )[0]?.image_url;
 
             return (
-              <Link href={`/produto/${product.id}`} key={product.id} className="group">
+              <Link
+                href={`/produto/${product.id}`}
+                key={product.id}
+                className="group"
+              >
                 <div className="aspect-[3/4] bg-white relative mb-3 overflow-hidden border border-gray-100">
                   {product.is_on_sale && (
-                    <span className="absolute top-2 left-2 bg-red-100 text-red-800 text-[10px] px-2 py-0.5 z-10 uppercase tracking-wider">Sale</span>
+                    <span className="absolute top-2 left-2 bg-red-100 text-red-800 text-[10px] px-2 py-0.5 z-10 uppercase tracking-wider">
+                      Sale
+                    </span>
                   )}
                   {coverImage ? (
                     <img
@@ -140,11 +150,20 @@ export default async function SemijoiasPage({
                 <div className="flex items-center gap-2 text-sm font-light">
                   {product.is_on_sale && product.sale_price ? (
                     <>
-                      <span className="text-gray-400 line-through">R$ {Number(product.price).toFixed(2).replace('.', ',')}</span>
-                      <span className="text-red-700 font-medium">R$ {Number(product.sale_price).toFixed(2).replace('.', ',')}</span>
+                      <span className="text-gray-400 line-through">
+                        R$ {Number(product.price).toFixed(2).replace(".", ",")}
+                      </span>
+                      <span className="text-red-700 font-medium">
+                        R${" "}
+                        {Number(product.sale_price)
+                          .toFixed(2)
+                          .replace(".", ",")}
+                      </span>
                     </>
                   ) : (
-                    <span className="text-brand-text">R$ {Number(product.price).toFixed(2).replace('.', ',')}</span>
+                    <span className="text-brand-text">
+                      R$ {Number(product.price).toFixed(2).replace(".", ",")}
+                    </span>
                   )}
                 </div>
               </Link>

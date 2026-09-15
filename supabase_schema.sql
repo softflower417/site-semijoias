@@ -113,9 +113,53 @@ ON customer_requests FOR ALL
 TO authenticated 
 USING (true);
 
--- Storage (Você precisará criar um bucket chamado 'product-images' manualmente no Dashboard se não for por SQL)
--- Inserir bucket se não existir (requer permissão de superuser, normalmente o Storage é criado via UI do Supabase)
--- INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'product-images', true);
+-- Storage: criar buckets públicos para imagens do catálogo e dos pedidos
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('product-images', 'product-images', true)
+ON CONFLICT (id) DO NOTHING;
 
--- Criar bucket para imagens de pedidos (rodar também no SQL Editor)
--- INSERT INTO storage.buckets (id, name, public) VALUES ('request-images', 'request-images', true);
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('request-images', 'request-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Permitir leitura pública das imagens do catálogo
+CREATE POLICY "Public can view product images"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'product-images');
+
+CREATE POLICY "Public can view request images"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'request-images');
+
+-- Permitir upload/alteração apenas para usuários autenticados
+CREATE POLICY "Authenticated users can upload product images"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'product-images');
+
+CREATE POLICY "Authenticated users can update product images"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'product-images')
+WITH CHECK (bucket_id = 'product-images');
+
+CREATE POLICY "Authenticated users can delete product images"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'product-images');
+
+CREATE POLICY "Authenticated users can upload request images"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'request-images');
+
+CREATE POLICY "Authenticated users can update request images"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'request-images')
+WITH CHECK (bucket_id = 'request-images');
+
+CREATE POLICY "Authenticated users can delete request images"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'request-images');
