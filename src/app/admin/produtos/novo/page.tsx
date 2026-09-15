@@ -361,28 +361,15 @@ export default function NovoProduto() {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Material
+                Código
               </label>
               <input
                 type="text"
-                placeholder="Ex: Prata 925, Liga Metálica"
-                name="material"
-                value={formData.material}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Banho
-              </label>
-              <input
-                type="text"
-                placeholder="Ex: Ouro 18k 10 milésimos"
-                name="plating"
-                value={formData.plating}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
+                placeholder="Ex: MAO-001"
+                name="code"
+                value={""}
+                onChange={() => {}}
+                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none bg-gray-50"
               />
             </div>
             <div>
@@ -398,7 +385,7 @@ export default function NovoProduto() {
                 className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
               />
             </div>
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Garantia
               </label>

@@ -411,34 +411,43 @@ export default function EditarProduto({ params }: { params: { id: string } }) {
             Especificações Técnicas
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
-            {[
-              {
-                label: "Material",
-                name: "material",
-                placeholder: "Ex: Prata 925",
-              },
-              { label: "Banho", name: "plating", placeholder: "Ex: Ouro 18k" },
-              {
-                label: "Medidas",
-                name: "measurements",
-                placeholder: "Ex: 40cm + 5cm",
-              },
-              { label: "Garantia", name: "warranty", placeholder: "" },
-            ].map((f) => (
-              <div key={f.name}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {f.label}
-                </label>
-                <input
-                  type="text"
-                  name={f.name}
-                  placeholder={f.placeholder}
-                  value={(formData as any)[f.name]}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
-                />
-              </div>
-            ))}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Código
+              </label>
+              <input
+                type="text"
+                placeholder="Ex: MAO-001"
+                value={params.id.slice(0, 8).toUpperCase()}
+                readOnly
+                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none bg-gray-50 text-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Medidas
+              </label>
+              <input
+                type="text"
+                name="measurements"
+                placeholder="Ex: 40cm + 5cm"
+                value={formData.measurements}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Garantia
+              </label>
+              <input
+                type="text"
+                name="warranty"
+                value={formData.warranty}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
+              />
+            </div>
           </div>
         </section>
 
