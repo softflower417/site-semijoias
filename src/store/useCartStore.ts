@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface Product {
   id: string;
@@ -28,15 +28,17 @@ export const useCartStore = create<CartStore>()(
       items: [],
       addItem: (product) => {
         const currentItems = get().items;
-        const existingItem = currentItems.find(item => item.id === product.id);
-        
+        const existingItem = currentItems.find(
+          (item) => item.id === product.id,
+        );
+
         if (existingItem) {
           set({
-            items: currentItems.map(item => 
-              item.id === product.id 
+            items: currentItems.map((item) =>
+              item.id === product.id
                 ? { ...item, quantity: item.quantity + 1 }
-                : item
-            )
+                : item,
+            ),
           });
         } else {
           set({ items: [...currentItems, { ...product, quantity: 1 }] });
@@ -44,19 +46,20 @@ export const useCartStore = create<CartStore>()(
       },
       removeItem: (productId) => {
         set({
-          items: get().items.filter(item => item.id !== productId)
+          items: get().items.filter((item) => item.id !== productId),
         });
       },
       clearCart: () => set({ items: [] }),
       getCartTotal: () => {
         return get().items.reduce((total, item) => {
-          const price = item.is_on_sale && item.sale_price ? item.sale_price : item.price;
-          return total + (price * item.quantity);
+          const price =
+            item.is_on_sale && item.sale_price ? item.sale_price : item.price;
+          return total + price * item.quantity;
         }, 0);
-      }
+      },
     }),
     {
-      name: 'saona-cart-storage',
-    }
-  )
+      name: "maona-cart-storage",
+    },
+  ),
 );

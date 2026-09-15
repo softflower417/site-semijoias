@@ -1,10 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { Heart, MessageCircle, ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCartStore } from '@/store/useCartStore';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import {
+  Heart,
+  MessageCircle,
+  ShoppingBag,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
+import Link from "next/link";
 
 interface ProductImage {
   image_url: string;
@@ -34,16 +41,16 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
-  const addItem = useCartStore(state => state.addItem);
+  const addItem = useCartStore((state) => state.addItem);
   const [supabase] = useState(() => createClient());
 
   useEffect(() => {
     async function fetchProduct() {
       const { data, error } = await supabase
-        .from('products')
-        .select('*, product_images(image_url, sort_order)')
-        .eq('id', params.id)
-        .eq('status', 'active')
+        .from("products")
+        .select("*, product_images(image_url, sort_order)")
+        .eq("id", params.id)
+        .eq("status", "active")
         .single();
 
       if (error || !data) {
@@ -51,7 +58,9 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
       } else {
         // Ordenar imagens por sort_order
         if (data.product_images) {
-          data.product_images.sort((a: ProductImage, b: ProductImage) => a.sort_order - b.sort_order);
+          data.product_images.sort(
+            (a: ProductImage, b: ProductImage) => a.sort_order - b.sort_order,
+          );
         }
         setProduct(data);
       }
@@ -59,28 +68,28 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
     }
 
     // Verificar favoritos no localStorage
-    const favs = JSON.parse(localStorage.getItem('saona_favorites') || '[]');
+    const favs = JSON.parse(localStorage.getItem("maona_favorites") || "[]");
     setIsFavorite(favs.includes(params.id));
 
     fetchProduct();
   }, [params.id]);
 
   const toggleFavorite = () => {
-    const favs = JSON.parse(localStorage.getItem('saona_favorites') || '[]');
+    const favs = JSON.parse(localStorage.getItem("maona_favorites") || "[]");
     let newFavs;
     if (isFavorite) {
       newFavs = favs.filter((id: string) => id !== params.id);
     } else {
       newFavs = [...favs, params.id];
     }
-    localStorage.setItem('saona_favorites', JSON.stringify(newFavs));
+    localStorage.setItem("maona_favorites", JSON.stringify(newFavs));
     setIsFavorite(!isFavorite);
   };
 
   const handleAddToCart = () => {
     if (!product || isOutOfStock) return;
     const images = product.product_images || [];
-    const coverImage = images[0]?.image_url || '';
+    const coverImage = images[0]?.image_url || "";
     addItem({
       id: product.id,
       name: product.name,
@@ -95,12 +104,15 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
 
   const handleBuyWhatsApp = () => {
     if (!product || isOutOfStock) return;
-    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
-    const price = product.is_on_sale && product.sale_price ? product.sale_price : product.price;
+    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5519971713924";
+    const price =
+      product.is_on_sale && product.sale_price
+        ? product.sale_price
+        : product.price;
     const text = encodeURIComponent(
-      `Olá! Tenho interesse nesta peça: *${product.name}* — R$ ${Number(price).toFixed(2).replace('.', ',')}`
+      `Olá! Tenho interesse nesta peça: *${product.name}* — R$ ${Number(price).toFixed(2).replace(".", ",")}`,
     );
-    window.open(`https://wa.me/${number}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${number}?text=${text}`, "_blank");
   };
 
   if (loading) {
@@ -117,9 +129,16 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
   if (notFound || !product) {
     return (
       <div className="container mx-auto px-4 py-24 text-center min-h-[60vh]">
-        <h1 className="font-serif text-3xl text-brand-burgundy mb-4">Peça não encontrada</h1>
-        <p className="text-gray-500 mb-8">Esta peça pode ter sido removida ou não está disponível.</p>
-        <Link href="/semijoias" className="border border-brand-burgundy text-brand-burgundy px-8 py-3 uppercase tracking-widest text-sm hover:bg-brand-burgundy hover:text-white transition-colors">
+        <h1 className="font-serif text-3xl text-brand-burgundy mb-4">
+          Peça não encontrada
+        </h1>
+        <p className="text-gray-500 mb-8">
+          Esta peça pode ter sido removida ou não está disponível.
+        </p>
+        <Link
+          href="/semijoias"
+          className="border border-brand-burgundy text-brand-burgundy px-8 py-3 uppercase tracking-widest text-sm hover:bg-brand-burgundy hover:text-white transition-colors"
+        >
           Ver todas as peças
         </Link>
       </div>
@@ -128,23 +147,39 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
 
   const images = product.product_images || [];
   const isOutOfStock = product.stock_quantity <= 0;
-  const displayPrice = product.is_on_sale && product.sale_price ? product.sale_price : product.price;
+  const displayPrice =
+    product.is_on_sale && product.sale_price
+      ? product.sale_price
+      : product.price;
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-gray-400 mb-8 uppercase tracking-widest">
-        <Link href="/" className="hover:text-brand-burgundy transition-colors">Home</Link>
+        <Link href="/" className="hover:text-brand-burgundy transition-colors">
+          Home
+        </Link>
         <span>/</span>
-        <Link href="/semijoias" className="hover:text-brand-burgundy transition-colors">Semijoias</Link>
+        <Link
+          href="/semijoias"
+          className="hover:text-brand-burgundy transition-colors"
+        >
+          Semijoias
+        </Link>
         <span>/</span>
-        <Link href={`/semijoias?category=${product.category}`} className="hover:text-brand-burgundy transition-colors">{product.category}</Link>
+        <Link
+          href={`/semijoias?category=${product.category}`}
+          className="hover:text-brand-burgundy transition-colors"
+        >
+          {product.category}
+        </Link>
         <span>/</span>
-        <span className="text-brand-burgundy truncate max-w-[120px]">{product.name}</span>
+        <span className="text-brand-burgundy truncate max-w-[120px]">
+          {product.name}
+        </span>
       </nav>
 
       <div className="grid md:grid-cols-2 gap-8 md:gap-16">
-
         {/* Galeria de Fotos */}
         <div className="space-y-3">
           {/* Imagem Principal */}
@@ -168,10 +203,22 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
                 />
                 {images.length > 1 && (
                   <>
-                    <button onClick={() => setActiveImg(i => (i - 1 + images.length) % images.length)} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow">
+                    <button
+                      onClick={() =>
+                        setActiveImg(
+                          (i) => (i - 1 + images.length) % images.length,
+                        )
+                      }
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow"
+                    >
                       <ChevronLeft size={18} />
                     </button>
-                    <button onClick={() => setActiveImg(i => (i + 1) % images.length)} className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow">
+                    <button
+                      onClick={() =>
+                        setActiveImg((i) => (i + 1) % images.length)
+                      }
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow"
+                    >
                       <ChevronRight size={18} />
                     </button>
                   </>
@@ -191,9 +238,13 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
                 <button
                   key={i}
                   onClick={() => setActiveImg(i)}
-                  className={`aspect-square border-2 overflow-hidden transition-colors ${activeImg === i ? 'border-brand-gold' : 'border-gray-100 hover:border-gray-300'}`}
+                  className={`aspect-square border-2 overflow-hidden transition-colors ${activeImg === i ? "border-brand-gold" : "border-gray-100 hover:border-gray-300"}`}
                 >
-                  <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={img.image_url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -203,13 +254,17 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
         {/* Informações do Produto */}
         <div className="flex flex-col">
           <div className="flex justify-between items-start mb-3">
-            <h1 className="text-2xl md:text-3xl font-serif text-brand-burgundy leading-tight">{product.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-serif text-brand-burgundy leading-tight">
+              {product.name}
+            </h1>
             <button
               onClick={toggleFavorite}
-              className={`p-2 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0 ml-2 ${isFavorite ? 'text-red-500' : 'text-gray-400'}`}
-              title={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+              className={`p-2 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0 ml-2 ${isFavorite ? "text-red-500" : "text-gray-400"}`}
+              title={
+                isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"
+              }
             >
-              <Heart size={22} fill={isFavorite ? 'currentColor' : 'none'} />
+              <Heart size={22} fill={isFavorite ? "currentColor" : "none"} />
             </button>
           </div>
 
@@ -217,11 +272,17 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
           <div className="mb-6">
             {product.is_on_sale && product.sale_price ? (
               <div className="flex items-center gap-3">
-                <span className="text-gray-400 line-through text-lg">R$ {Number(product.price).toFixed(2).replace('.', ',')}</span>
-                <span className="text-2xl font-medium text-red-700">R$ {Number(product.sale_price).toFixed(2).replace('.', ',')}</span>
+                <span className="text-gray-400 line-through text-lg">
+                  R$ {Number(product.price).toFixed(2).replace(".", ",")}
+                </span>
+                <span className="text-2xl font-medium text-red-700">
+                  R$ {Number(product.sale_price).toFixed(2).replace(".", ",")}
+                </span>
               </div>
             ) : (
-              <span className="text-2xl font-light text-brand-text">R$ {Number(product.price).toFixed(2).replace('.', ',')}</span>
+              <span className="text-2xl font-light text-brand-text">
+                R$ {Number(product.price).toFixed(2).replace(".", ",")}
+              </span>
             )}
           </div>
 
@@ -237,54 +298,77 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
               onClick={handleAddToCart}
               disabled={isOutOfStock}
               className={`w-full py-4 uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-all duration-200
-                ${isOutOfStock
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : addedToCart
-                    ? 'bg-green-600 text-white'
-                    : 'bg-brand-burgundy text-brand-nude hover:bg-brand-burgundy/90'}`}
+                ${
+                  isOutOfStock
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : addedToCart
+                      ? "bg-green-600 text-white"
+                      : "bg-brand-burgundy text-brand-nude hover:bg-brand-burgundy/90"
+                }`}
             >
               <ShoppingBag size={18} />
-              {isOutOfStock ? 'Produto Esgotado' : addedToCart ? '✓ Adicionado à sacola!' : 'Adicionar à Sacola'}
+              {isOutOfStock
+                ? "Produto Esgotado"
+                : addedToCart
+                  ? "✓ Adicionado à sacola!"
+                  : "Adicionar à Sacola"}
             </button>
 
             <button
               onClick={handleBuyWhatsApp}
               disabled={isOutOfStock}
               className={`w-full py-4 uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-colors border
-                ${isOutOfStock
-                  ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white'}`}
+                ${
+                  isOutOfStock
+                    ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                    : "border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white"
+                }`}
             >
               <MessageCircle size={18} />
-              {isOutOfStock ? 'Indisponível' : 'Comprar pelo WhatsApp'}
+              {isOutOfStock ? "Indisponível" : "Comprar pelo WhatsApp"}
             </button>
           </div>
 
           {/* Especificações */}
-          {(product.material || product.plating || product.measurements || product.warranty) && (
+          {(product.material ||
+            product.plating ||
+            product.measurements ||
+            product.warranty) && (
             <div className="border-t border-brand-gold/20 pt-6 space-y-3">
-              <h3 className="font-serif text-brand-burgundy text-base mb-3">Especificações</h3>
+              <h3 className="font-serif text-brand-burgundy text-base mb-3">
+                Especificações
+              </h3>
               {product.material && (
                 <div className="flex gap-4 text-sm border-b border-gray-50 pb-3">
-                  <span className="text-gray-400 w-20 flex-shrink-0">Material</span>
+                  <span className="text-gray-400 w-20 flex-shrink-0">
+                    Material
+                  </span>
                   <span className="text-brand-text">{product.material}</span>
                 </div>
               )}
               {product.plating && (
                 <div className="flex gap-4 text-sm border-b border-gray-50 pb-3">
-                  <span className="text-gray-400 w-20 flex-shrink-0">Banho</span>
+                  <span className="text-gray-400 w-20 flex-shrink-0">
+                    Banho
+                  </span>
                   <span className="text-brand-text">{product.plating}</span>
                 </div>
               )}
               {product.measurements && (
                 <div className="flex gap-4 text-sm border-b border-gray-50 pb-3">
-                  <span className="text-gray-400 w-20 flex-shrink-0">Medidas</span>
-                  <span className="text-brand-text">{product.measurements}</span>
+                  <span className="text-gray-400 w-20 flex-shrink-0">
+                    Medidas
+                  </span>
+                  <span className="text-brand-text">
+                    {product.measurements}
+                  </span>
                 </div>
               )}
               {product.warranty && (
                 <div className="flex gap-4 text-sm pb-3">
-                  <span className="text-gray-400 w-20 flex-shrink-0">Garantia</span>
+                  <span className="text-gray-400 w-20 flex-shrink-0">
+                    Garantia
+                  </span>
                   <span className="text-brand-text">{product.warranty}</span>
                 </div>
               )}

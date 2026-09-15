@@ -1,14 +1,17 @@
-'use client';
+"use client";
 
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from "lucide-react";
 
 export default function FloatingWhatsApp() {
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
-  const message = encodeURIComponent('Olá! Gostaria de tirar uma dúvida sobre as peças.');
+  const whatsappNumber =
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5519971713924";
+  const message = encodeURIComponent(
+    "Olá! Gostaria de tirar uma dúvida sobre as peças.",
+  );
   const href = `https://wa.me/${whatsappNumber}?text=${message}`;
 
   return (
-    <a 
+    <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"

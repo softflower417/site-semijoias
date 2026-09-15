@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  
+
   // Create client safely
   const [supabase] = useState(() => createClient());
 
@@ -26,14 +26,14 @@ export default function AdminLogin() {
       });
 
       if (error) {
-        setError('E-mail ou senha inválidos.');
+        setError("E-mail ou senha inválidos.");
         setLoading(false);
       } else {
-        router.push('/admin/produtos');
+        router.push("/admin/produtos");
         router.refresh();
       }
     } catch (err) {
-      setError('Erro de conexão.');
+      setError("Erro de conexão.");
       setLoading(false);
     }
   };
@@ -42,8 +42,12 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-brand-nude flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border border-brand-gold/20">
         <div className="text-center mb-8">
-          <h1 className="font-serif text-3xl text-brand-burgundy tracking-widest">SAONA</h1>
-          <p className="text-sm text-gray-500 uppercase tracking-widest mt-2">Acesso Restrito</p>
+          <h1 className="font-serif text-3xl text-brand-burgundy tracking-widest">
+            MAONA
+          </h1>
+          <p className="text-sm text-gray-500 uppercase tracking-widest mt-2">
+            Acesso Restrito
+          </p>
         </div>
 
         {error && (
@@ -54,9 +58,11 @@ export default function AdminLogin() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-            <input 
-              type="email" 
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              E-mail
+            </label>
+            <input
+              type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -64,21 +70,23 @@ export default function AdminLogin() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-            <input 
-              type="password" 
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Senha
+            </label>
+            <input
+              type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-brand-gold focus:border-brand-gold"
             />
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="w-full bg-brand-burgundy text-white py-3 rounded uppercase tracking-widest text-sm hover:bg-brand-burgundy/90 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Entrando...' : 'Entrar'}
+            {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
       </div>
