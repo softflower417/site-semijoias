@@ -97,6 +97,7 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
       sale_price: product.sale_price,
       is_on_sale: product.is_on_sale,
       image_url: coverImage,
+      material: product.material,
     });
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
@@ -109,8 +110,9 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
       product.is_on_sale && product.sale_price
         ? product.sale_price
         : product.price;
+    const productCode = product.material || product.id.slice(0, 8);
     const text = encodeURIComponent(
-      `Olá! Tenho interesse nesta peça: *${product.name}* — R$ ${Number(price).toFixed(2).replace(".", ",")}`,
+      `Olá! Tenho interesse nesta peça: *${product.name}* (Cód: ${productCode}) — R$ ${Number(price).toFixed(2).replace(".", ",")}`,
     );
     window.open(`https://wa.me/${number}?text=${text}`, "_blank");
   };
@@ -338,7 +340,7 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
               <div className="flex gap-4 text-sm border-b border-gray-50 pb-3">
                 <span className="text-gray-400 w-20 flex-shrink-0">Código</span>
                 <span className="text-brand-text uppercase tracking-wide">
-                  {product.id.slice(0, 8)}
+                  {product.material || product.id.slice(0, 8)}
                 </span>
               </div>
               {product.measurements && (

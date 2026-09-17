@@ -8,6 +8,7 @@ export interface Product {
   sale_price: number | null;
   is_on_sale: boolean;
   image_url: string;
+  material: string | null;
 }
 
 interface CartItem extends Product {

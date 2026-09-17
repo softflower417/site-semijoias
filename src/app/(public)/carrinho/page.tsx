@@ -14,7 +14,8 @@ export default function CarrinhoPage() {
     items.forEach((item) => {
       const price =
         item.is_on_sale && item.sale_price ? item.sale_price : item.price;
-      text += `• ${item.quantity}x ${item.name} — R$ ${Number(price).toFixed(2).replace(".", ",")}\n`;
+      const productCode = item.material || item.id.slice(0, 8);
+      text += `• ${item.quantity}x ${item.name} (Cód: ${productCode}) — R$ ${Number(price).toFixed(2).replace(".", ",")}\n`;
     });
     text += `\n*Total: R$ ${getCartTotal().toFixed(2).replace(".", ",")}*`;
 
@@ -78,6 +79,11 @@ export default function CarrinhoPage() {
                     <p className="text-sm text-gray-500 mt-1">
                       Qtd: {item.quantity}
                     </p>
+                    {item.material && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        Cód: {item.material}
+                      </p>
+                    )}
                   </div>
                   <p className="text-brand-text font-medium">
                     R${" "}
