@@ -361,15 +361,15 @@ export default function NovoProduto() {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Código
+                Especificação
               </label>
               <input
                 type="text"
                 placeholder="Ex: MAO-001"
-                name="code"
-                value={""}
-                onChange={() => {}}
-                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none bg-gray-50"
+                name="material"
+                value={formData.material}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
               />
             </div>
             <div>

@@ -413,14 +413,15 @@ export default function EditarProduto({ params }: { params: { id: string } }) {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Código
+                Especificação
               </label>
               <input
                 type="text"
                 placeholder="Ex: MAO-001"
-                value={params.id.slice(0, 8).toUpperCase()}
-                readOnly
-                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none bg-gray-50 text-gray-600"
+                name="material"
+                value={formData.material}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
               />
             </div>
             <div>
