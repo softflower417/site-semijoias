@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, ImagePlus, X, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, ImagePlus, X, Trash2, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { generateDescription, getAllStyles, getStyleLabel, DescriptionStyle } from "@/lib/descriptionGenerator";
 
 interface ExistingImage {
   id: string;
@@ -38,9 +39,12 @@ export default function EditarProduto({ params }: { params: { id: string } }) {
     material: "",
     plating: "",
     measurements: "",
-    warranty: "1 ano para defeitos de fabricação",
+    warranty: "3 meses",
     status: "active",
   });
+
+  const [selectedStyle, setSelectedStyle] = useState<DescriptionStyle>("basico");
+  const [showStyleSelector, setShowStyleSelector] = useState(false);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -66,7 +70,7 @@ export default function EditarProduto({ params }: { params: { id: string } }) {
         material: data.material || "",
         plating: data.plating || "",
         measurements: data.measurements || "",
-        warranty: data.warranty || "1 ano para defeitos de fabricação",
+        warranty: data.warranty || "3 meses",
         status: data.status || "active",
       });
 
@@ -93,6 +97,12 @@ export default function EditarProduto({ params }: { params: { id: string } }) {
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleGenerateDescription = () => {
+    const description = generateDescription(formData, selectedStyle);
+    setFormData((prev) => ({ ...prev, description }));
+    setShowStyleSelector(false);
   };
 
   const handleNewImages = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -346,13 +356,50 @@ export default function EditarProduto({ params }: { params: { id: string } }) {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Descrição
               </label>
-              <textarea
-                name="description"
-                rows={3}
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none"
-              ></textarea>
+              <div className="relative">
+                <textarea
+                  name="description"
+                  rows={3}
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded focus:ring-1 focus:ring-brand-gold outline-none pr-12"
+                ></textarea>
+                <button
+                  type="button"
+                  onClick={() => setShowStyleSelector(!showStyleSelector)}
+                  className="absolute right-2 top-2 p-1.5 text-brand-gold hover:bg-brand-gold/10 rounded transition-colors"
+                  title="Gerar descrição automaticamente"
+                >
+                  <Sparkles size={18} />
+                </button>
+                
+                {showStyleSelector && (
+                  <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 w-64">
+                    <p className="text-xs font-medium text-gray-700 mb-2">
+                      Escolha o estilo da descrição:
+                    </p>
+                    <div className="space-y-1">
+                      {getAllStyles().map((style) => (
+                        <button
+                          key={style}
+                          type="button"
+                          onClick={() => {
+                            setSelectedStyle(style);
+                            handleGenerateDescription();
+                          }}
+                          className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
+                            selectedStyle === style
+                              ? "bg-brand-gold text-white"
+                              : "hover:bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          {getStyleLabel(style)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>

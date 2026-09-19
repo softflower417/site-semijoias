@@ -14,8 +14,12 @@ export default function CarrinhoPage() {
     items.forEach((item) => {
       const price =
         item.is_on_sale && item.sale_price ? item.sale_price : item.price;
-      const productCode = item.material || item.id.slice(0, 8);
-      text += `• ${item.quantity}x ${item.name} (Cód: ${productCode}) — R$ ${Number(price).toFixed(2).replace(".", ",")}\n`;
+      let itemText = `• ${item.quantity}x ${item.name}`;
+      if (item.material) {
+        itemText += ` (Cód: ${item.material})`;
+      }
+      itemText += ` — R$ ${Number(price).toFixed(2).replace(".", ",")}\n`;
+      text += itemText;
     });
     text += `\n*Total: R$ ${getCartTotal().toFixed(2).replace(".", ",")}*`;
 
