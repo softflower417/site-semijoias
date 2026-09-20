@@ -55,29 +55,47 @@ export default function AdminProdutos() {
       return;
     }
 
-    const newQuantity = product.stock_quantity - 1;
-    const newSoldQuantity = (product.sold_quantity || 0) + 1;
-    const newStatus = newQuantity <= 0 ? 'inactive' : product.status;
+    try {
+      const newQuantity = product.stock_quantity - 1;
+      const newSoldQuantity = (product.sold_quantity || 0) + 1;
+      const newStatus = newQuantity <= 0 ? 'inactive' : product.status;
 
-    // Atualizar produto
-    await supabase
-      .from('products')
-      .update({
-        stock_quantity: newQuantity,
-        sold_quantity: newSoldQuantity,
-        status: newStatus
-      })
-      .eq('id', product.id);
+      // Atualizar produto
+      const { error: updateError } = await supabase
+        .from('products')
+        .update({
+          stock_quantity: newQuantity,
+          sold_quantity: newSoldQuantity,
+          status: newStatus
+        })
+        .eq('id', product.id);
 
-    // Registrar venda automaticamente
-    await supabase.from('sales').insert([{
-      product_name: product.name,
-      value: product.is_on_sale && product.sale_price ? product.sale_price : product.price,
-      date: new Date().toISOString().split('T')[0],
-      notes: 'Venda via botão Vendi'
-    }]);
+      if (updateError) {
+        console.error('Erro ao atualizar produto:', updateError);
+        alert('Erro ao atualizar produto: ' + updateError.message);
+        return;
+      }
 
-    fetchProducts();
+      // Registrar venda automaticamente
+      const { error: saleError } = await supabase.from('sales').insert([{
+        product_name: product.name,
+        value: product.is_on_sale && product.sale_price ? product.sale_price : product.price,
+        date: new Date().toISOString().split('T')[0],
+        notes: 'Venda via botão Vendi'
+      }]);
+
+      if (saleError) {
+        console.error('Erro ao registrar venda:', saleError);
+        alert('Erro ao registrar venda: ' + saleError.message);
+        return;
+      }
+
+      fetchProducts();
+      alert('Venda registrada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao processar venda:', error);
+      alert('Erro ao processar venda: ' + (error as any).message);
+    }
   };
 
   return (
