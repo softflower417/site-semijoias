@@ -3,16 +3,31 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Search } from 'lucide-react';
 
 export default function AdminProdutos() {
   const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const supabase = createClient();
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = products.filter(product => 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.material && product.material.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts(products);
+    }
+  }, [searchTerm, products]);
 
   const fetchProducts = async () => {
     const { data, error } = await supabase
@@ -20,7 +35,10 @@ export default function AdminProdutos() {
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (data) setProducts(data);
+    if (data) {
+      setProducts(data);
+      setFilteredProducts(data);
+    }
     setLoading(false);
   };
 
@@ -44,6 +62,25 @@ export default function AdminProdutos() {
         </Link>
       </div>
 
+      {/* Barra de Pesquisa */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Pesquisar produtos por nome, categoria ou material..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-transparent outline-none"
+          />
+        </div>
+        {searchTerm && (
+          <p className="text-sm text-gray-500 mt-2">
+            Mostrando {filteredProducts.length} de {products.length} produtos
+          </p>
+        )}
+      </div>
+
       <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="w-full text-left border-collapse min-w-[600px]">
           <thead>
@@ -58,10 +95,12 @@ export default function AdminProdutos() {
           <tbody className="divide-y divide-gray-200">
             {loading ? (
               <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">Carregando...</td></tr>
-            ) : products.length === 0 ? (
-              <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">Nenhum produto cadastrado.</td></tr>
+            ) : filteredProducts.length === 0 ? (
+              <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                {searchTerm ? 'Nenhum produto encontrado com os termos da pesquisa.' : 'Nenhum produto cadastrado.'}
+              </td></tr>
             ) : (
-              products.map((product) => (
+              filteredProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
                   <td className="px-6 py-4 text-gray-500">{product.category}</td>
@@ -72,8 +111,14 @@ export default function AdminProdutos() {
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 text-xs rounded-full ${product.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {product.status === 'active' ? 'Ativo' : 'Inativo'}
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      product.status === 'active' ? 'bg-green-100 text-green-800' : 
+                      product.status === 'out_of_stock' ? 'bg-red-100 text-red-800' : 
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {product.status === 'active' ? 'Ativo' : 
+                       product.status === 'out_of_stock' ? 'Esgotado' : 
+                       'Inativo'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right flex justify-end gap-3">

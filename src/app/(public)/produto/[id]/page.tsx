@@ -31,6 +31,7 @@ interface Product {
   measurements: string | null;
   warranty: string | null;
   category: string;
+  status: string;
   product_images: ProductImage[];
 }
 
@@ -50,7 +51,6 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
         .from("products")
         .select("*, product_images(image_url, sort_order)")
         .eq("id", params.id)
-        .eq("status", "active")
         .single();
 
       if (error || !data) {
@@ -149,7 +149,7 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
   }
 
   const images = product.product_images || [];
-  const isOutOfStock = product.stock_quantity <= 0;
+  const isOutOfStock = product.stock_quantity <= 0 || product.status !== 'active';
   const displayPrice =
     product.is_on_sale && product.sale_price
       ? product.sale_price
@@ -189,7 +189,7 @@ export default function ProdutoPage({ params }: { params: { id: string } }) {
           <div className="aspect-[3/4] bg-white border border-gray-100 relative overflow-hidden">
             {isOutOfStock && (
               <div className="absolute top-4 left-4 bg-gray-900 text-white text-xs px-3 py-1 uppercase tracking-widest z-10">
-                Esgotado
+                ESGOTADO
               </div>
             )}
             {product.is_on_sale && !isOutOfStock && (

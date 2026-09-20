@@ -24,8 +24,7 @@ export default function FavoritosPage() {
       const { data } = await supabase
         .from("products")
         .select("*, product_images(image_url, sort_order)")
-        .in("id", ids)
-        .eq("status", "active");
+        .in("id", ids);
 
       setProducts(data || []);
       setLoading(false);
@@ -83,11 +82,14 @@ export default function FavoritosPage() {
 
                 <Link href={`/produto/${product.id}`}>
                   <div className="aspect-[3/4] bg-white relative mb-3 overflow-hidden border border-gray-100">
+                    {product.status !== 'active' && (
+                      <span className="absolute top-2 left-2 bg-gray-800 text-white text-[10px] px-2 py-0.5 z-10 uppercase tracking-wider">ESGOTADO</span>
+                    )}
                     {coverImage ? (
                       <img
                         src={coverImage}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${product.status !== 'active' ? 'opacity-60' : ''}`}
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-50 flex items-center justify-center text-gray-200 text-xs">
