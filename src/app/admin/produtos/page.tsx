@@ -7,6 +7,7 @@ import { Plus, Edit, Trash2, Search } from 'lucide-react';
 
 export default function AdminProdutos() {
   const [products, setProducts] = useState<any[]>([]);
+  const [sales, setSales] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,16 +31,24 @@ export default function AdminProdutos() {
   }, [searchTerm, products]);
 
   const fetchProducts = async () => {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const [productsRes, salesRes] = await Promise.all([
+      supabase.from('products').select('*').order('created_at', { ascending: false }),
+      supabase.from('sales').select('*')
+    ]);
     
-    if (data) {
-      setProducts(data);
-      setFilteredProducts(data);
+    if (productsRes.data) {
+      setProducts(productsRes.data);
+      setFilteredProducts(productsRes.data);
     }
+    if (salesRes.data) setSales(salesRes.data);
     setLoading(false);
+  };
+
+  // Calcular vendidos por produto
+  const getSoldCount = (productId: string, productName: string) => {
+    return sales.filter(sale => 
+      sale.product_name === productName
+    ).length;
   };
 
   const handleDelete = async (id: string) => {
@@ -57,15 +66,13 @@ export default function AdminProdutos() {
 
     try {
       const newQuantity = product.stock_quantity - 1;
-      const newSoldQuantity = (product.sold_quantity || 0) + 1;
       const newStatus = newQuantity <= 0 ? 'inactive' : product.status;
 
-      // Atualizar produto
+      // Atualizar apenas quantidade e status
       const { error: updateError } = await supabase
         .from('products')
         .update({
           stock_quantity: newQuantity,
-          sold_quantity: newSoldQuantity,
           status: newStatus
         })
         .eq('id', product.id);
@@ -162,7 +169,7 @@ export default function AdminProdutos() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-center font-medium text-gray-900">{product.stock_quantity}</td>
-                  <td className="px-6 py-4 text-center font-medium text-green-600">{product.sold_quantity || 0}</td>
+                  <td className="px-6 py-4 text-center font-medium text-green-600">{getSoldCount(product.id, product.name)}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       product.status === 'active' ? 'bg-green-100 text-green-800' : 

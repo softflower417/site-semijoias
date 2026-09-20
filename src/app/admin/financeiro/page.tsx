@@ -102,7 +102,18 @@ export default function AdminFinanceiro() {
 
   // Cálculos do estoque
   const totalInventoryValue = products.reduce((acc, curr) => acc + (Number(curr.price) * Number(curr.stock_quantity)), 0);
-  const totalSoldValue = products.reduce((acc, curr) => acc + (Number(curr.price) * Number(curr.sold_quantity || 0)), 0);
+  
+  // Calcular vendidos dinamicamente das vendas
+  const salesByProduct = sales.reduce((acc, sale) => {
+    acc[sale.product_name] = (acc[sale.product_name] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  const totalSoldValue = products.reduce((acc, curr) => {
+    const soldCount = salesByProduct[curr.name] || 0;
+    return acc + (Number(curr.price) * soldCount);
+  }, 0);
+  
   const totalInvested = totalInventoryValue / 2; // Metade do valor de venda
   const potentialProfit = totalInventoryValue - totalInvested;
   const profitMargin = totalInventoryValue > 0 ? ((potentialProfit / totalInventoryValue) * 100).toFixed(1) : 0;
