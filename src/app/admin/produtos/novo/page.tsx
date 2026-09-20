@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, ImagePlus, X, GripVertical, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { generateDescription, getAllStyles, getStyleLabel, DescriptionStyle } from "@/lib/descriptionGenerator";
+import Swal from 'sweetalert2';
 
 interface ImagePreview {
   file: File;
@@ -108,7 +109,12 @@ export default function NovoProduto() {
       .single();
 
     if (productError || !product) {
-      alert("Erro ao criar produto: " + productError?.message);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Erro ao criar produto: ' + productError?.message,
+        icon: 'error',
+        confirmButtonColor: '#8B4513'
+      });
       setLoading(false);
       return;
     }
@@ -129,9 +135,12 @@ export default function NovoProduto() {
           "Erro ao enviar imagem para Storage:",
           uploadError.message,
         );
-        alert(
-          "Falha ao enviar algumas imagens. Verifique se o bucket product-images está público e com políticas de upload.",
-        );
+        Swal.fire({
+          title: 'Aviso',
+          text: 'Falha ao enviar algumas imagens. Verifique se o bucket product-images está público e com políticas de upload.',
+          icon: 'warning',
+          confirmButtonColor: '#8B4513'
+        });
         continue;
       }
 

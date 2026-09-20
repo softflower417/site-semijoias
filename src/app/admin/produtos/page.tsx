@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 export default function AdminProdutos() {
   const [products, setProducts] = useState<any[]>([]);
@@ -52,15 +53,36 @@ export default function AdminProdutos() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este produto?')) {
+    const result = await Swal.fire({
+      title: 'Tem certeza?',
+      text: 'Você não poderá reverter esta ação!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#8B4513',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sim, excluir!',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
       await supabase.from('products').delete().eq('id', id);
       fetchProducts();
+      Swal.fire(
+        'Excluído!',
+        'O produto foi excluído com sucesso.',
+        'success'
+      );
     }
   };
 
   const handleSale = async (product: any) => {
     if (product.stock_quantity <= 0) {
-      alert('Produto esgotado!');
+      Swal.fire({
+        title: 'Produto Esgotado',
+        text: 'Este produto não está mais disponível em estoque.',
+        icon: 'error',
+        confirmButtonColor: '#8B4513'
+      });
       return;
     }
 
@@ -79,7 +101,12 @@ export default function AdminProdutos() {
 
       if (updateError) {
         console.error('Erro ao atualizar produto:', updateError);
-        alert('Erro ao atualizar produto: ' + updateError.message);
+        Swal.fire({
+          title: 'Erro',
+          text: 'Erro ao atualizar produto: ' + updateError.message,
+          icon: 'error',
+          confirmButtonColor: '#8B4513'
+        });
         return;
       }
 
@@ -93,15 +120,30 @@ export default function AdminProdutos() {
 
       if (saleError) {
         console.error('Erro ao registrar venda:', saleError);
-        alert('Erro ao registrar venda: ' + saleError.message);
+        Swal.fire({
+          title: 'Erro',
+          text: 'Erro ao registrar venda: ' + saleError.message,
+          icon: 'error',
+          confirmButtonColor: '#8B4513'
+        });
         return;
       }
 
       fetchProducts();
-      alert('Venda registrada com sucesso!');
+      Swal.fire({
+        title: 'Venda Registrada!',
+        text: 'A venda foi registrada com sucesso.',
+        icon: 'success',
+        confirmButtonColor: '#8B4513'
+      });
     } catch (error) {
       console.error('Erro ao processar venda:', error);
-      alert('Erro ao processar venda: ' + (error as any).message);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Erro ao processar venda: ' + (error as any).message,
+        icon: 'error',
+        confirmButtonColor: '#8B4513'
+      });
     }
   };
 
