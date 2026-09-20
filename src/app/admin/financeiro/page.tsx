@@ -102,6 +102,7 @@ export default function AdminFinanceiro() {
 
   // Cálculos do estoque
   const totalInventoryValue = products.reduce((acc, curr) => acc + (Number(curr.price) * Number(curr.stock_quantity)), 0);
+  const totalSoldValue = products.reduce((acc, curr) => acc + (Number(curr.price) * Number(curr.sold_quantity || 0)), 0);
   const totalInvested = totalInventoryValue / 2; // Metade do valor de venda
   const potentialProfit = totalInventoryValue - totalInvested;
   const profitMargin = totalInventoryValue > 0 ? ((potentialProfit / totalInventoryValue) * 100).toFixed(1) : 0;
@@ -261,7 +262,7 @@ export default function AdminFinanceiro() {
           <p className="text-3xl font-bold text-green-800">R$ {totalSales.toFixed(2).replace('.', ',')}</p>
           <div className="flex items-center gap-1 mt-2 text-green-600 text-sm">
             <TrendingUp size={16} />
-            <span>Vendas realizadas</span>
+            <span>Vendas manuais + automáticas</span>
           </div>
         </div>
         
@@ -305,7 +306,7 @@ export default function AdminFinanceiro() {
       </div>
 
       {/* Cards Secundários */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center gap-3 mb-2">
             <div className="bg-blue-500 p-2 rounded-lg text-white"><Target size={20} /></div>
@@ -331,6 +332,15 @@ export default function AdminFinanceiro() {
           </div>
           <p className="text-2xl font-bold text-amber-600">{profitMargin}%</p>
           <p className="text-sm text-gray-500 mt-1">Sobre o valor de venda</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="bg-teal-500 p-2 rounded-lg text-white"><Package size={20} /></div>
+            <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Vendido via Botão</span>
+          </div>
+          <p className="text-2xl font-bold text-teal-600">R$ {totalSoldValue.toFixed(2).replace('.', ',')}</p>
+          <p className="text-sm text-gray-500 mt-1">Total de vendas automáticas</p>
         </div>
       </div>
 

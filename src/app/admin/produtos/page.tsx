@@ -49,6 +49,37 @@ export default function AdminProdutos() {
     }
   };
 
+  const handleSale = async (product: any) => {
+    if (product.stock_quantity <= 0) {
+      alert('Produto esgotado!');
+      return;
+    }
+
+    const newQuantity = product.stock_quantity - 1;
+    const newSoldQuantity = (product.sold_quantity || 0) + 1;
+    const newStatus = newQuantity <= 0 ? 'inactive' : product.status;
+
+    // Atualizar produto
+    await supabase
+      .from('products')
+      .update({
+        stock_quantity: newQuantity,
+        sold_quantity: newSoldQuantity,
+        status: newStatus
+      })
+      .eq('id', product.id);
+
+    // Registrar venda automaticamente
+    await supabase.from('sales').insert([{
+      product_name: product.name,
+      value: product.is_on_sale && product.sale_price ? product.sale_price : product.price,
+      date: new Date().toISOString().split('T')[0],
+      notes: 'Venda via botão Vendi'
+    }]);
+
+    fetchProducts();
+  };
+
   return (
     <div className="p-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -88,15 +119,17 @@ export default function AdminProdutos() {
               <th className="px-6 py-4 font-medium">Nome</th>
               <th className="px-6 py-4 font-medium">Categoria</th>
               <th className="px-6 py-4 font-medium">Preço</th>
+              <th className="px-6 py-4 font-medium text-center">Qtd</th>
+              <th className="px-6 py-4 font-medium text-center">Vendidos</th>
               <th className="px-6 py-4 font-medium">Status</th>
               <th className="px-6 py-4 font-medium text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {loading ? (
-              <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">Carregando...</td></tr>
+              <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500">Carregando...</td></tr>
             ) : filteredProducts.length === 0 ? (
-              <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+              <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                 {searchTerm ? 'Nenhum produto encontrado com os termos da pesquisa.' : 'Nenhum produto cadastrado.'}
               </td></tr>
             ) : (
@@ -110,6 +143,8 @@ export default function AdminProdutos() {
                       <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded">SALE</span>
                     )}
                   </td>
+                  <td className="px-6 py-4 text-center font-medium text-gray-900">{product.stock_quantity}</td>
+                  <td className="px-6 py-4 text-center font-medium text-green-600">{product.sold_quantity || 0}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       product.status === 'active' ? 'bg-green-100 text-green-800' : 
@@ -121,11 +156,23 @@ export default function AdminProdutos() {
                        'Inativo'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right flex justify-end gap-3">
-                    <Link href={`/admin/produtos/${product.id}/editar`} className="text-blue-600 hover:text-blue-800" title="Editar">
+                  <td className="px-6 py-4 text-right flex justify-end gap-2">
+                    <button 
+                      onClick={() => handleSale(product)}
+                      disabled={product.stock_quantity <= 0}
+                      className={`px-3 py-1.5 text-xs rounded flex items-center gap-1 transition-colors ${
+                        product.stock_quantity <= 0 
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                          : 'bg-green-600 text-white hover:bg-green-700'
+                      }`}
+                      title="Registrar venda"
+                    >
+                      Vendi
+                    </button>
+                    <Link href={`/admin/produtos/${product.id}/editar`} className="text-blue-600 hover:text-blue-800 p-1" title="Editar">
                       <Edit size={18} />
                     </Link>
-                    <button onClick={() => handleDelete(product.id)} className="text-red-600 hover:text-red-800" title="Excluir">
+                    <button onClick={() => handleDelete(product.id)} className="text-red-600 hover:text-red-800 p-1" title="Excluir">
                       <Trash2 size={18} />
                     </button>
                   </td>
